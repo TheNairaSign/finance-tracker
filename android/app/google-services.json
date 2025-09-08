@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "440038229820",
+    "project_id": "halo-task-a9236",
+    "storage_bucket": "halo-task-a9236.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440038229820:android:0eed379bfe23e6681fc039",
+        "android_client_info": {
+          "package_name": "com.example.finance_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "440038229820-c7ake1iebs9j5nirj0jo1khgplbli0pg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.finance_tracker",
+            "certificate_hash": "c1efbe268508118b5df7ac87222105e0d4e11967"
+          }
+        },
+        {
+          "client_id": "440038229820-s06b03j0t11pakef9lvehni2mbkbbrrd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbpl3IQ5n-xJCM8mJl-9FwcA-Tzp5SxUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "440038229820-s06b03j0t11pakef9lvehni2mbkbbrrd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "440038229820-iv9ane5m2hreb8sft43rv1m9veogj04f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.financeTracker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
