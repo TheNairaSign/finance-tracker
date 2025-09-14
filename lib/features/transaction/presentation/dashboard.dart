@@ -1,5 +1,8 @@
+import 'package:card_loading/card_loading.dart';
 import 'package:finance_tracker/features/auth/data/repositories/user_repository.dart';
+import 'package:finance_tracker/features/transaction/data/transaction_category.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_notifier.dart';
+import 'package:finance_tracker/features/transaction/logic/transaction_state.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/all_transactions_tab.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/expenses_tab.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/income_tab.dart';
@@ -13,7 +16,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../data/models/transaction.dart';
-import '../data/models/transaction_category.dart';
 
 class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({super.key});
@@ -32,17 +34,20 @@ class _DashboardState extends ConsumerState<Dashboard> with SingleTickerProvider
     ref.read(transactionNotifierProvider.notifier).getTransactions();
   }
 
+
   final Set<SpendingCategory> categories = {
-    SpendingCategory('Transport', 375, Color(0xFF4ECDC4)),
-    SpendingCategory('Healthcare', 500, Color(0xFF45B7D1)),
-    SpendingCategory('Entertainment', 350, Color(0xFF96CEB4)),
-    SpendingCategory('Others', 325, Color(0xFFFFD93D)),
-    SpendingCategory('Food', 215, Color(0xFFFF6B6B)),
+    SpendingCategory(category: TransactionCategory.transportation, amount: 375),
+    SpendingCategory(category: TransactionCategory.healthcare, amount: 500),
+    SpendingCategory(category: TransactionCategory.entertainment, amount: 350),
+    SpendingCategory(category: TransactionCategory.other, amount: 325),
+    SpendingCategory(category: TransactionCategory.food, amount: 215),
   };
 
   @override
   Widget build(BuildContext context) {
     final userState = ref.watch(getUserDataProvider);
+
+    final transactionState = ref.watch(transactionNotifierProvider);
 
     return ListView(
       children: [
@@ -102,98 +107,150 @@ class _DashboardState extends ConsumerState<Dashboard> with SingleTickerProvider
                     )
                   );
                 },
-                  loading: () => CircularProgressIndicator(color: Colors.white),
+                  loading: () => CardLoading(
+                    height: 20,
+                    width: 50,
+                    borderRadius: BorderRadius.circular(10),
+                ),
               )
             ]
           ),
         ),
-        // const SizedBox(height: 10),
-        // Row(
-        //   children: [
-        //     RichText(
-        //       text: TextSpan(
-        //         style: Theme.of(context).textTheme.bodySmall,
-        //         children: [
-        //           TextSpan(text: '\$424 '),
-        //           TextSpan(text: 'of \$920 spent', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey))
-        //         ]
-        //       )
-        //     ),
-        //     const Spacer(),
-        //     Container(
-        //       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        //       decoration: BoxDecoration(
-        //         color: Color(0xFF2fe58e),
-        //         borderRadius: BorderRadius.circular(20),
-        //       ),
-        //       child: RichText(
-        //         text: TextSpan(
-        //           style: Theme.of(context).textTheme.bodySmall,
-        //           children: [
-        //             TextSpan(text: '+15% '),
-        //             TextSpan(text: 'than last month', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white))
-        //           ]
-        //         )
-        //       ),
-        //     )
-        //   ],
-        // ),
-        const SizedBox(height: 15),
-      /*
-        LinearProgressIndicator(
-          value: 424 / 920,
-          backgroundColor: Colors.grey[300],
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-          minHeight: 8,
-          borderRadius: BorderRadius.circular(4),
+        /*
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            RichText(
+              text: TextSpan(
+                style: Theme.of(context).textTheme.bodySmall,
+                children: [
+                  TextSpan(text: '\$424 '),
+                  TextSpan(text: 'of \$920 spent', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey))
+                ]
+              )
+            ),
+            const Spacer(),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Color(0xFF2fe58e),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.bodySmall,
+                  children: [
+                    TextSpan(text: '+15% '),
+                    TextSpan(text: 'than last month', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white))
+                  ]
+                )
+              ),
+            )
+          ],
         ),
         */
+        const SizedBox(height: 15),
 
-        Row(
-          spacing: 15,
-          children: [
-            Expanded(child: TransactionCard(amount: '2000', type: TransactionType.income)),
-            Expanded(child: TransactionCard(amount: '2000', type: TransactionType.expense)),
-          ],
+        transactionState.maybeWhen(
+          loaded: (transactions) {
+            final double incomeSum = transactions.where((txn) => txn.type == TransactionType.income).fold(0, (sum, transaction) => sum + transaction.amount);
+            final double expenseSum = transactions.where((txn) => txn.type == TransactionType.expense).fold(0, (sum, transaction) => sum + transaction.amount);
+            return Row(
+              spacing: 15,
+              children: [
+                Expanded(child: TransactionCard(amount: incomeSum.toString(), type: TransactionType.income)),
+                Expanded(child: TransactionCard(amount: expenseSum.toString(), type: TransactionType.expense)),
+              ],
+            );
+          },
+          orElse: () => Row(
+            spacing: 15,
+            children: [
+              Expanded(
+                child: CardLoading(
+                  height: 80,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              Expanded(
+                child: CardLoading(
+                  height: 80,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 15),
-        SpendingProgressCard(spent: 377, budget: 924),
-        const SizedBox(height: 15),
-        SpendingOverviewContainer(categories: categories),
-
-        const SizedBox(height: 15),
-        Row(
-          spacing: 15,
-          children: [
-            Expanded(
-              child: AddTransactionButton(
-                onPressed: () {},
-                text: 'Add Transaction',
-                asset: 'assets/svgs/add-circle.svg',
-                color: Color(0xff1e67ea),
-              )
-            ),
-            Expanded(
-              child: AddTransactionButton(
-                onPressed: () {},
-                text: 'View Budget',
-                asset: 'assets/svgs/target.svg',
-                color: Color(0xff22c45d),
-              )
-            ),
-          ],
+        transactionState.maybeWhen(
+          loaded: (transactions) => SpendingProgressCard(spent: 377, budget: 924),
+          orElse: () => CardLoading(
+            height: 100,
+            borderRadius: BorderRadius.circular(15),
+          ),
         ),
+        const SizedBox(height: 15),
+        transactionState.maybeWhen(
+          loaded: (transactions) => SpendingOverviewContainer(transactions: transactions.toSet()),
+          orElse: () => CardLoading(
+            height: 200,
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+        const SizedBox(height: 15),
+        transactionState.maybeWhen(
+          loaded: (_) => Row(
+            spacing: 15,
+            children: [
+              Expanded(
+                child: AddTransactionButton(
+                  onPressed: () {},
+                  text: 'Add Transaction',
+                  asset: 'assets/svgs/add-circle.svg',
+                  color: Color(0xff1e67ea),
+                ),
+              ),
+              Expanded(
+                child: AddTransactionButton(
+                  onPressed: () {},
+                  text: 'View Budget',
+                  asset: 'assets/svgs/target.svg',
+                  color: Color(0xff22c45d),
+                ),
+              ),
+            ],
+          ),
+          orElse: () => Row(
+            spacing: 15,
+            children: [
+              Expanded(
+                child: CardLoading(
+                  height: 50,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              Expanded(
+                child: CardLoading(
+                  height: 50,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+            ],
+          ),
+        )
         // const SizedBox(height: 15),
-        // TxnTab(),
+        // TxnTab(tabController: _tabController),
         // const SizedBox(height: 15),
-        RecentTxns(),
+        // RecentTxns(),
       ],
     );
   }
 }
 
 class TxnTab extends StatelessWidget {
-  const TxnTab({super.key});
+  final TabController? tabController;
+
+  const TxnTab({super.key, required this.tabController});
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +259,7 @@ class TxnTab extends StatelessWidget {
       child: Column(
         children: [
           TabBar(
-            // controller: _tabController,
+            controller: tabController,
             indicatorColor: Color(0xFFb1ff85),
             labelColor: Colors.black,
             indicatorSize: TabBarIndicatorSize.tab,
@@ -218,7 +275,7 @@ class TxnTab extends StatelessWidget {
           SizedBox(
             height: 200,
             child: TabBarView(
-              // controller: _tabController,
+              controller: tabController,
               children: [
                 AllTransactionsTab(),
                 IncomeTab(),

@@ -48,6 +48,8 @@ class TransactionRepository {
       });
     } on FirebaseException catch (e) {
       throw AuthException(e.message ?? 'Something went wrong while adding a transaction');
+    } catch (e) {
+      throw AuthException('Error adding transaction: ${e.toString()}');
     }
   }
 

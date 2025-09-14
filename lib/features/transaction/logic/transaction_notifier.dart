@@ -10,6 +10,10 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
   final TransactionRepository transactionRepository;
   StreamSubscription<List<Transaction>>? _subscription;
 
+  List<Transaction> _txns = [];
+  List<Transaction> get txns => _txns;
+
+
   TransactionNotifier(this.transactionRepository) : super(TransactionState.initial());
 
   void getTransactions() async {
@@ -19,7 +23,8 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     _subscription?.cancel();
 
     _subscription = transactionRepository.getTransactions().listen((transactions) {
-      print('Transactions from subscription: $transactions');
+        print('Transactions from subscription: $transactions');
+        _txns = transactions;
         state = TransactionState.loaded(transactions);
       },
       onError: (err) => state = TransactionState.error(err.toString())
@@ -39,10 +44,13 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
   }
 
   Future<void> addTransaction(Transaction txn) async {
+    print('Adding transaction: $txn');
+    state = TransactionState.loading();
     try {
-      await transactionRepository.addTransaction(txn);
+      await transactionRepository.addTransaction(txn).then((_) => getTransactions());
       state = TransactionState.loaded([txn]);
     } catch (e) {
+      print('Error adding transaction: $e');
       state = TransactionState.error(e.toString());
     }
   }

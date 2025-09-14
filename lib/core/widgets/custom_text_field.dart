@@ -20,7 +20,9 @@ class CustomTextField extends StatefulWidget {
     this.suffixIcon,
     this.initialValue,
     this.onChanged,
-    this.validator
+    this.validator,
+    this.fillColor,
+    this.borderColor
   });
   final TextEditingController? controller; 
   final String? hintText, initialValue, label;
@@ -33,6 +35,8 @@ class CustomTextField extends StatefulWidget {
   final Color? backgroundColor;
   final BorderSide? enabledBorder;
   final String? Function(String?)? validator;
+  final Color? fillColor;
+  final Color? borderColor;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -41,7 +45,7 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    // final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
     return TextFormField(
       validator: widget.validator,
       controller: widget.controller,
@@ -49,7 +53,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       obscuringCharacter: '*',
       keyboardType: widget.keyboardType ?? TextInputType.name,
       initialValue: widget.controller == null ? widget.initialValue : null,
-      cursorColor: GlobalColors.primaryColor,
+      cursorColor: widget.borderColor ?? GlobalColors.primaryColor,
       onChanged: widget.onChanged,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(),
       decoration: InputDecoration(
@@ -69,13 +73,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
         child: Icon(widget.obscure? Icons.visibility_off : Icons.visibility, size: 20)) : null),
         // enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: widget.enabledBorder ?? BorderSide.none),
         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: GlobalColors.primaryColor, width: .5), borderRadius: BorderRadius.circular(10)),
+        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: widget.borderColor != null ? widget.borderColor!.withValues(alpha: .5) : GlobalColors.primaryColor, width: .5), borderRadius: BorderRadius.circular(10)),
         disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color.fromARGB(255, 242, 147, 141), width: .5)),
         enabled: widget.enabled,
         errorStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red),
         focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 1), borderRadius: BorderRadius.circular(10)),
         // fillColor: widget.backgroundColor ?? (const Color(0xfff5f5f5)),
-        fillColor: GlobalColors(context).textFieldColor,
+        fillColor: widget.fillColor ?? GlobalColors(context).textFieldColor,
         filled: true,
       ),
     );

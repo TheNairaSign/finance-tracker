@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:card_loading/card_loading.dart';
+import 'package:finance_tracker/core/theme/global_colors.dart';
 import 'package:finance_tracker/core/widgets/shimmer_placeholder_container.dart';
 import 'package:finance_tracker/features/transaction/presentation/utils/add_transaction_modal.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +27,7 @@ class _NavigationMainShellState extends ConsumerState<NavigationMainShell> {
     final user = ref.watch(getUserDataProvider);
     debugPrint('User in dashboard: $user');
     return Scaffold(
-      backgroundColor: Color(0xfff5f5f5),
+      backgroundColor: GlobalColors.background,
       appBar: _currentIndex != 0 ? null : AppBar(
         leading: Container(
           // decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
@@ -56,7 +58,11 @@ class _NavigationMainShellState extends ConsumerState<NavigationMainShell> {
             user.when(
               data: (data) => Text(data?.displayName ?? 'John Doe', style: Theme.of(context).textTheme.headlineSmall),
               error: (error, stackTrace) => Text('Error: $error'),
-              loading: () => const CircularProgressIndicator()
+              loading: () => CardLoading(
+                height: 20,
+                width: 50,
+                borderRadius: BorderRadius.circular(10),
+              )
             )
           ],
         ),

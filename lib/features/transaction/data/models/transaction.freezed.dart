@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Transaction {
 
- String get userId; String? get id; double get amount; String get category;@DateTimeConverter() DateTime get date;@TransactionTypeConverter() TransactionType get type; String? get note;
+ String get userId; String? get id; double get amount;@TransactionCategoryConverter() dynamic get category;@DateTimeConverter() DateTime get date;@TransactionTypeConverter() TransactionType get type; String? get note;
 /// Create a copy of Transaction
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,12 +28,12 @@ $TransactionCopyWith<Transaction> get copyWith => _$TransactionCopyWithImpl<Tran
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transaction&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.category, category) || other.category == category)&&(identical(other.date, date) || other.date == date)&&(identical(other.type, type) || other.type == type)&&(identical(other.note, note) || other.note == note));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transaction&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.amount, amount) || other.amount == amount)&&const DeepCollectionEquality().equals(other.category, category)&&(identical(other.date, date) || other.date == date)&&(identical(other.type, type) || other.type == type)&&(identical(other.note, note) || other.note == note));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,id,amount,category,date,type,note);
+int get hashCode => Object.hash(runtimeType,userId,id,amount,const DeepCollectionEquality().hash(category),date,type,note);
 
 @override
 String toString() {
@@ -48,7 +48,7 @@ abstract mixin class $TransactionCopyWith<$Res>  {
   factory $TransactionCopyWith(Transaction value, $Res Function(Transaction) _then) = _$TransactionCopyWithImpl;
 @useResult
 $Res call({
- String userId, String? id, double amount, String category,@DateTimeConverter() DateTime date,@TransactionTypeConverter() TransactionType type, String? note
+ String userId, String? id, double amount,@TransactionCategoryConverter() dynamic category,@DateTimeConverter() DateTime date,@TransactionTypeConverter() TransactionType type, String? note
 });
 
 
@@ -65,13 +65,13 @@ class _$TransactionCopyWithImpl<$Res>
 
 /// Create a copy of Transaction
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? id = freezed,Object? amount = null,Object? category = null,Object? date = null,Object? type = null,Object? note = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? id = freezed,Object? amount = null,Object? category = freezed,Object? date = null,Object? type = null,Object? note = freezed,}) {
   return _then(_self.copyWith(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
-as double,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
-as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as double,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as dynamic,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as TransactionType,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  String? id,  double amount,  String category, @DateTimeConverter()  DateTime date, @TransactionTypeConverter()  TransactionType type,  String? note)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  String? id,  double amount, @TransactionCategoryConverter()  dynamic category, @DateTimeConverter()  DateTime date, @TransactionTypeConverter()  TransactionType type,  String? note)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Transaction() when $default != null:
 return $default(_that.userId,_that.id,_that.amount,_that.category,_that.date,_that.type,_that.note);case _:
@@ -177,7 +177,7 @@ return $default(_that.userId,_that.id,_that.amount,_that.category,_that.date,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  String? id,  double amount,  String category, @DateTimeConverter()  DateTime date, @TransactionTypeConverter()  TransactionType type,  String? note)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  String? id,  double amount, @TransactionCategoryConverter()  dynamic category, @DateTimeConverter()  DateTime date, @TransactionTypeConverter()  TransactionType type,  String? note)  $default,) {final _that = this;
 switch (_that) {
 case _Transaction():
 return $default(_that.userId,_that.id,_that.amount,_that.category,_that.date,_that.type,_that.note);}
@@ -194,7 +194,7 @@ return $default(_that.userId,_that.id,_that.amount,_that.category,_that.date,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  String? id,  double amount,  String category, @DateTimeConverter()  DateTime date, @TransactionTypeConverter()  TransactionType type,  String? note)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  String? id,  double amount, @TransactionCategoryConverter()  dynamic category, @DateTimeConverter()  DateTime date, @TransactionTypeConverter()  TransactionType type,  String? note)?  $default,) {final _that = this;
 switch (_that) {
 case _Transaction() when $default != null:
 return $default(_that.userId,_that.id,_that.amount,_that.category,_that.date,_that.type,_that.note);case _:
@@ -209,15 +209,15 @@ return $default(_that.userId,_that.id,_that.amount,_that.category,_that.date,_th
 @JsonSerializable()
 
 class _Transaction implements Transaction {
-  const _Transaction({required this.userId, this.id, required this.amount, required this.category, @DateTimeConverter() required this.date, @TransactionTypeConverter() required this.type, this.note});
+  const _Transaction({required this.userId, this.id, required this.amount, @TransactionCategoryConverter() this.category = TransactionCategory.other, @DateTimeConverter() required this.date, @TransactionTypeConverter() this.type = TransactionType.income, this.note});
   factory _Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
 
 @override final  String userId;
 @override final  String? id;
 @override final  double amount;
-@override final  String category;
+@override@JsonKey()@TransactionCategoryConverter() final  dynamic category;
 @override@DateTimeConverter() final  DateTime date;
-@override@TransactionTypeConverter() final  TransactionType type;
+@override@JsonKey()@TransactionTypeConverter() final  TransactionType type;
 @override final  String? note;
 
 /// Create a copy of Transaction
@@ -233,12 +233,12 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transaction&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.category, category) || other.category == category)&&(identical(other.date, date) || other.date == date)&&(identical(other.type, type) || other.type == type)&&(identical(other.note, note) || other.note == note));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transaction&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.id, id) || other.id == id)&&(identical(other.amount, amount) || other.amount == amount)&&const DeepCollectionEquality().equals(other.category, category)&&(identical(other.date, date) || other.date == date)&&(identical(other.type, type) || other.type == type)&&(identical(other.note, note) || other.note == note));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,id,amount,category,date,type,note);
+int get hashCode => Object.hash(runtimeType,userId,id,amount,const DeepCollectionEquality().hash(category),date,type,note);
 
 @override
 String toString() {
@@ -253,7 +253,7 @@ abstract mixin class _$TransactionCopyWith<$Res> implements $TransactionCopyWith
   factory _$TransactionCopyWith(_Transaction value, $Res Function(_Transaction) _then) = __$TransactionCopyWithImpl;
 @override @useResult
 $Res call({
- String userId, String? id, double amount, String category,@DateTimeConverter() DateTime date,@TransactionTypeConverter() TransactionType type, String? note
+ String userId, String? id, double amount,@TransactionCategoryConverter() dynamic category,@DateTimeConverter() DateTime date,@TransactionTypeConverter() TransactionType type, String? note
 });
 
 
@@ -270,13 +270,13 @@ class __$TransactionCopyWithImpl<$Res>
 
 /// Create a copy of Transaction
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? id = freezed,Object? amount = null,Object? category = null,Object? date = null,Object? type = null,Object? note = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? id = freezed,Object? amount = null,Object? category = freezed,Object? date = null,Object? type = null,Object? note = freezed,}) {
   return _then(_Transaction(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
-as double,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
-as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as double,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as dynamic,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as TransactionType,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
 as String?,

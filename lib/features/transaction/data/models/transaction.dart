@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance_tracker/features/transaction/data/transaction_category.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction.freezed.dart';
@@ -12,9 +13,9 @@ sealed class Transaction with _$Transaction {
     required String userId,
     String? id,
     required double amount,
-    required String category,
+    @TransactionCategoryConverter() @Default(TransactionCategory.other) TransactionCategory category,
     @DateTimeConverter() required DateTime date,
-    @TransactionTypeConverter() required TransactionType type,
+    @TransactionTypeConverter() @Default(TransactionType.income) TransactionType type,
     String? note,
   }) = _Transaction;
 
@@ -46,4 +47,14 @@ class TransactionTypeConverter implements JsonConverter<TransactionType, String>
 
   @override
   String toJson(TransactionType object) => object.name;
+}
+
+class TransactionCategoryConverter implements JsonConverter<TransactionCategory, String> {
+  const TransactionCategoryConverter();
+
+  @override
+  TransactionCategory fromJson(String json) => TransactionCategory.values.firstWhere((e) => e.name == json);
+
+  @override
+  String toJson(TransactionCategory object) => object.name;
 }
