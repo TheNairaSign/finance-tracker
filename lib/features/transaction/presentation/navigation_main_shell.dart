@@ -25,6 +25,7 @@ class _NavigationMainShellState extends ConsumerState<NavigationMainShell> {
     final user = ref.watch(getUserDataProvider);
     debugPrint('User in dashboard: $user');
     return Scaffold(
+      backgroundColor: Color(0xfff5f5f5),
       appBar: _currentIndex != 0 ? null : AppBar(
         leading: Container(
           // decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),

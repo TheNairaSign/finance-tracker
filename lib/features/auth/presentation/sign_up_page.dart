@@ -1,3 +1,4 @@
+import 'package:finance_tracker/core/theme/global_colors.dart';
 import 'package:finance_tracker/core/widgets/custom_text_field.dart';
 import 'package:finance_tracker/features/auth/data/models/sign_up_field_model.dart';
 import 'package:finance_tracker/features/auth/logic/provider/sign_up_notifier.dart';
@@ -65,8 +66,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                 checkboxShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                 contentPadding: EdgeInsets.symmetric(horizontal: 5),
                 title: Text('I agree with terms of use', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-                activeColor: Colors.black,
+                activeColor: GlobalColors.primaryColor,
                 value: _isChecked,
+                checkColor: Colors.white,
                 onChanged: (value) {
                   setState(() {
                     _isChecked = value!;
@@ -77,11 +79,38 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               SizedBox(
                 width: double.infinity,
                 child: AuthButton(
-                  onPressed: () => provider.signUp(
-                    fieldModels[1].controller.text,
-                    fieldModels[2].controller.text,
-                    displayName: fieldModels[0].controller.text,
-                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      provider.signUp(
+                        fieldModels[1].controller.text,
+                        fieldModels[2].controller.text,
+                        displayName: fieldModels[0].controller.text,
+                      ).then((_) {
+                        ref.watch(signUpNotifierProvider).maybeWhen(
+                          authenticated: (_) {
+                            context.go('/');
+                          },
+                          error: (message) {
+                            debugPrint('Error signing up: $message');
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Sign Up Failed'),
+                                content: Text(message),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: Text('OK'),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                          orElse: () => debugPrint('Or ELSE')
+                        );
+                      });
+                    }
+                  },
                   text: 'Sign up',
                   child: state == SignUpState.loading() ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,

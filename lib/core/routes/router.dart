@@ -39,13 +39,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/loading',
         builder: (context, state) => const LoadingPage(),
       ),
+      // GoRoute(
+      //   path: '/loading',
+      //   builder: (context, state) => const ChartPage(),
+      // ),
     ],
   );
 });
 
 FutureOr<String?> Function(BuildContext, GoRouterState)? redirectLogic(Ref ref) {
-  return (context, state) {
-    final authState = ref.watch(authStateProvider);
+  return (context, state) async {
+    final authState = await Future.microtask(() => ref.watch(authStateProvider));
     final user = authState.asData?.value;
     final isLoading = authState.isLoading;
 

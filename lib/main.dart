@@ -25,7 +25,7 @@ class FinanceTracker extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: 'Finance Tracker',
       theme: lightTheme,
-      darkTheme: darkTheme,
+      // darkTheme: darkTheme,
     );
   }
 }

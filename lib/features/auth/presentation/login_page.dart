@@ -1,3 +1,4 @@
+import 'package:finance_tracker/core/theme/global_colors.dart';
 import 'package:finance_tracker/core/utils/validators.dart';
 import 'package:finance_tracker/core/widgets/custom_text_field.dart';
 import 'package:finance_tracker/features/auth/logic/login_state.dart';
@@ -60,7 +61,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 checkboxShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                 contentPadding: EdgeInsets.symmetric(horizontal: 5),
                 title: Text('Remember me', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-                activeColor: Colors.black,
+                activeColor: GlobalColors.primaryColor,
                 checkColor: Colors.white,
                 value: _isChecked,
                 onChanged: (value) {
@@ -74,35 +75,36 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 width: double.infinity,
                 child: AuthButton(
                   onPressed: () {
-                    provider.signIn(_emailController.text, _passwordController.text).then((_) {
-                      ref.watch(loginNotifierProvider).maybeWhen(
-                      authenticated: (_) {
-                        if (widget.from != null) {
-                          context.go(widget.from!);
-                        } else {
-                          context.go('/');
-                        }
-                      },
-                      error: (message) {
-                        debugPrint('Error loggin in: $message');
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Login Failed'),
-                            content: Text(message),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: Text('OK'),
-                              )
-                            ],
-                          ),
+                    if (_formKey.currentState!.validate()) {
+                      provider.signIn(_emailController.text, _passwordController.text).then((_) {
+                        ref.watch(loginNotifierProvider).maybeWhen(
+                          authenticated: (_) {
+                            if (widget.from != null) {
+                              context.go(widget.from!);
+                            } else {
+                              context.go('/');
+                            }
+                          },
+                          error: (message) {
+                            debugPrint('Error logging in: $message');
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Login Failed'),
+                                content: Text(message),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: Text('OK'),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                          orElse: () => debugPrint('Or ELSE')
                         );
-                      },
-                      orElse: () => debugPrint('Or ELSE')
-                    );
-                    });
-
+                      });
+                    }
                     // if (isAuthed!) {
                     //   if (widget.from != null) {
                     //     context.go(widget.from!);

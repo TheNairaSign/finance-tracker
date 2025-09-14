@@ -18,6 +18,24 @@ class ProfilePage extends ConsumerWidget {
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              final shouldSignOut = await _showSignOutDialog(context);
+              if (shouldSignOut == true) {
+                try {
+                  await ref.read(authRepositoryProvider).signOut();
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Error signing out: $e"),
+                        backgroundColor: Colors.red));
+                  }
+                }
+              }
+            }),
+        ],
       ),
       body: userProfileAsync.when(
         data: (user) {
@@ -32,7 +50,7 @@ class ProfilePage extends ConsumerWidget {
                 const SizedBox(height: 24),
                 _buildFinancialInfo(user, context),
                 const SizedBox(height: 24),
-                _buildAccountInfo(user, context),
+                _buildAccountInfo(user, context, ref),
                 const SizedBox(height: 32),
                 _buildSignOutButton(ref, context),
               ],
@@ -248,7 +266,7 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildAccountInfo(dynamic user, BuildContext context) {
+  Widget _buildAccountInfo(dynamic user, BuildContext context, WidgetRef ref) {
     return Card(
       elevation: 0,
       color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),

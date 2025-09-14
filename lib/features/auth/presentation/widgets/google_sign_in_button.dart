@@ -13,7 +13,7 @@ class GoogleSignInButton extends ConsumerWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.all(10),
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           textStyle: Theme.of(context).textTheme.bodyMedium
