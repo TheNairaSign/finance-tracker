@@ -93,6 +93,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 Text('Add Transaction', style: Theme.of(context).textTheme.headlineSmall),
               ],
             ),
+            // CurrencyTextField(),
             const SizedBox(height: 20),
             CustomTextField(
               enabled: _isLoading ? false : true,

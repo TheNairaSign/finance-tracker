@@ -31,13 +31,15 @@ class _IncomeTabState extends ConsumerState<IncomeTab> {
           return Center(child: Text('No income transactions'));
         }
 
+        debugPrint('Income transactions: $incomeTransactions');
+
         return ListView.separated(
-          itemCount: transactions.length,
+          itemCount: incomeTransactions.length,
           separatorBuilder: (context, index) => const SizedBox(height: 10),
           itemBuilder: (context, index) {
             final transaction = incomeTransactions[index];
             return TransactionItem(
-              title: transaction.category,
+              title: transaction.category.name,
               amount: transaction.amount.toString(),
               isExpense: false
             );

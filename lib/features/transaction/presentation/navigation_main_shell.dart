@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_loading/card_loading.dart';
-import 'package:finance_tracker/core/theme/global_colors.dart';
 import 'package:finance_tracker/core/widgets/shimmer_placeholder_container.dart';
 import 'package:finance_tracker/features/transaction/presentation/utils/add_transaction_modal.dart';
 import 'package:flutter/material.dart';
@@ -27,10 +26,8 @@ class _NavigationMainShellState extends ConsumerState<NavigationMainShell> {
     final user = ref.watch(getUserDataProvider);
     debugPrint('User in dashboard: $user');
     return Scaffold(
-      backgroundColor: GlobalColors.background,
-      appBar: _currentIndex != 0 ? null : AppBar(
+      appBar: _currentIndex != 0 ? null: AppBar(
         leading: Container(
-          // decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
           margin: const EdgeInsets.all(7),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(50),
@@ -54,9 +51,8 @@ class _NavigationMainShellState extends ConsumerState<NavigationMainShell> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Welcome', style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 5),
             user.when(
-              data: (data) => Text(data?.displayName ?? 'John Doe', style: Theme.of(context).textTheme.headlineSmall),
+              data: (data) => Text(data?.displayName ?? 'John Doe', style: Theme.of(context).textTheme.titleLarge),
               error: (error, stackTrace) => Text('Error: $error'),
               loading: () => CardLoading(
                 height: 20,
@@ -68,16 +64,17 @@ class _NavigationMainShellState extends ConsumerState<NavigationMainShell> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: _currentIndex != 0 ? EdgeInsetsGeometry.zero : const EdgeInsets.all(15.0),
         child: widget.child,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.money), label: 'Transactions'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
         ],
         currentIndex: _currentIndex,
@@ -90,7 +87,7 @@ class _NavigationMainShellState extends ConsumerState<NavigationMainShell> {
         backgroundColor: Color(0xFFb1ff85),
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -101,9 +98,14 @@ class _NavigationMainShellState extends ConsumerState<NavigationMainShell> {
         setState(() => _currentIndex = 0);
         break;
       case 1:
-        GoRouter.of(context).go('/profile');
+        GoRouter.of(context).go('/transactions');
         setState(() => _currentIndex = 1);
+        break;
+      case 2:
+        GoRouter.of(context).go('/profile');
+        setState(() => _currentIndex = 2);
         break;
     }
   }
+
 }

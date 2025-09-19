@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart' hide Transaction;
 import 'package:finance_tracker/core/utils/auth_exception.dart';
+import 'package:finance_tracker/core/utils/date_range_utils.dart';
 import 'package:finance_tracker/features/auth/data/repositories/auth_repository.dart';
 import 'package:finance_tracker/features/transaction/data/models/transaction.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,6 +51,47 @@ class TransactionRepository {
       throw AuthException(e.message ?? 'Something went wrong while adding a transaction');
     } catch (e) {
       throw AuthException('Error adding transaction: ${e.toString()}');
+    }
+  }
+
+  /// 🔹 Stream of current month transactions
+  Stream<List<Transaction>> getCurrentMonthTransactions() {
+    try {
+      final range = DateRangeUtils.getMonthRange();
+
+      return _userTransactionCollection
+          .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(range["start"]!))
+          .where('date', isLessThanOrEqualTo: Timestamp.fromDate(range["end"]!))
+          .orderBy('date', descending: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => Transaction.fromJson(doc.data()).copyWith(id: doc.id))
+              .toList());
+    } on FirebaseException catch (e) {
+      throw AuthException(e.message ?? 'Something went wrong while fetching transactions');
+    }
+  }
+
+  /// 🔹 Get total budget (income) for current month
+  Future<double> getCurrentMonthBudget() async {
+    try {
+      final range = DateRangeUtils.getMonthRange();
+
+      final snapshot = await _userTransactionCollection
+          .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(range["start"]!))
+          .where('date', isLessThanOrEqualTo: Timestamp.fromDate(range["end"]!))
+          .where('type', isEqualTo: 'income')
+          .get();
+
+      double totalBudget = 0;
+      for (var doc in snapshot.docs) {
+        final transaction = Transaction.fromJson(doc.data());
+        totalBudget += transaction.amount;
+      }
+
+      return totalBudget;
+    } on FirebaseException catch (e) {
+      throw AuthException(e.message ?? 'Something went wrong while fetching budget');
     }
   }
 

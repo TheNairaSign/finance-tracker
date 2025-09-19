@@ -1,11 +1,11 @@
 import 'package:card_loading/card_loading.dart';
 import 'package:finance_tracker/features/auth/data/repositories/user_repository.dart';
-import 'package:finance_tracker/features/transaction/data/transaction_category.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_state.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/all_transactions_tab.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/expenses_tab.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/income_tab.dart';
+import 'package:finance_tracker/features/transaction/presentation/utils/add_transaction_modal.dart';
 import 'package:finance_tracker/features/transaction/presentation/widgets/add_transaction_button.dart';
 import 'package:finance_tracker/features/transaction/presentation/widgets/progress_card.dart';
 import 'package:finance_tracker/features/transaction/presentation/widgets/spending_overview_container.dart';
@@ -25,23 +25,12 @@ class Dashboard extends ConsumerStatefulWidget {
 }
 
 class _DashboardState extends ConsumerState<Dashboard> with SingleTickerProviderStateMixin {
-  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     ref.read(transactionNotifierProvider.notifier).getTransactions();
   }
-
-
-  final Set<SpendingCategory> categories = {
-    SpendingCategory(category: TransactionCategory.transportation, amount: 375),
-    SpendingCategory(category: TransactionCategory.healthcare, amount: 500),
-    SpendingCategory(category: TransactionCategory.entertainment, amount: 350),
-    SpendingCategory(category: TransactionCategory.other, amount: 325),
-    SpendingCategory(category: TransactionCategory.food, amount: 215),
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +193,7 @@ class _DashboardState extends ConsumerState<Dashboard> with SingleTickerProvider
             children: [
               Expanded(
                 child: AddTransactionButton(
-                  onPressed: () {},
+                  onPressed: () => showAddTransactionModal(context),
                   text: 'Add Transaction',
                   asset: 'assets/svgs/add-circle.svg',
                   color: Color(0xff1e67ea),
@@ -254,37 +243,33 @@ class TxnTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          TabBar(
+    return Column(
+      children: [
+        TabBar(
+          controller: tabController,
+          indicatorColor: Color(0xFFb1ff85),
+          labelColor: Colors.black,
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: Colors.transparent,
+          unselectedLabelColor: Colors.grey,
+          labelStyle: Theme.of(context).textTheme.bodyMedium,
+          tabs: [
+            Tab(text: 'All'),
+            Tab(text: 'Income'),
+            Tab(text: 'Expenses'),
+          ],
+        ),
+        Expanded(
+          child: TabBarView(
             controller: tabController,
-            indicatorColor: Color(0xFFb1ff85),
-            labelColor: Colors.black,
-            indicatorSize: TabBarIndicatorSize.tab,
-            dividerColor: Colors.transparent,
-            unselectedLabelColor: Colors.grey,
-            labelStyle: Theme.of(context).textTheme.bodyMedium,
-            tabs: [
-              Tab(text: 'All'),
-              Tab(text: 'Income'),
-              Tab(text: 'Expenses'),
+            children: [
+              AllTransactionsTab(),
+              IncomeTab(),
+              ExpenseTab(),
             ],
           ),
-          SizedBox(
-            height: 200,
-            child: TabBarView(
-              controller: tabController,
-              children: [
-                AllTransactionsTab(),
-                IncomeTab(),
-                ExpenseTab(),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

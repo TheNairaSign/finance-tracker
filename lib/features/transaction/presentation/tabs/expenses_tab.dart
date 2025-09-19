@@ -32,14 +32,14 @@ class _ExpenseTabState extends ConsumerState<ExpenseTab> {
           }
 
           return ListView.separated(
-            itemCount: transactions.length,
+            itemCount: expenseTransactions.length,
             separatorBuilder: (context, index) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final transaction = expenseTransactions[index];
               return TransactionItem(
-                title: transaction.category,
+                title: transaction.category.name,
                 amount: transaction.amount.toString(),
-                isExpense: false
+                isExpense: true
               );
             },
           );

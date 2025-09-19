@@ -1,3 +1,4 @@
+import 'package:finance_tracker/core/extensions/capitalize.dart';
 import 'package:flutter/material.dart';
 
 class TransactionItem extends StatelessWidget {
@@ -6,16 +7,15 @@ class TransactionItem extends StatelessWidget {
   final bool isExpense;
 
   const TransactionItem({
-    Key? key,
+    super.key,
     required this.title,
     required this.amount,
     required this.isExpense,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -34,11 +34,11 @@ class TransactionItem extends StatelessWidget {
             size: 20,
           ),
         ),
-        title: Text(title),
-        subtitle: Text(isExpense ? 'Expense' : 'Income'),
+        title: Text(title.capitalize(), style: Theme.of(context).textTheme.bodyLarge),
+        subtitle: Text(isExpense ? 'Expense' : 'Income', style: Theme.of(context).textTheme.bodySmall),
         trailing: Text(
           amount,
-          style: TextStyle(
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: isExpense ? Colors.red : Colors.green,
             fontWeight: FontWeight.bold,
           ),

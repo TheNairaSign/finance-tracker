@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Transaction {
 
- String get userId; String? get id; double get amount;@TransactionCategoryConverter() dynamic get category;@DateTimeConverter() DateTime get date;@TransactionTypeConverter() TransactionType get type; String? get note;
+ String get userId; String? get id; double get amount;@TransactionCategoryConverter() TransactionCategory get category;@DateTimeConverter() DateTime get date;@TransactionTypeConverter() TransactionType get type; String? get note;
 /// Create a copy of Transaction
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -215,7 +215,7 @@ class _Transaction implements Transaction {
 @override final  String userId;
 @override final  String? id;
 @override final  double amount;
-@override@JsonKey()@TransactionCategoryConverter() final  dynamic category;
+@override@JsonKey()@TransactionCategoryConverter() final  TransactionCategory category;
 @override@DateTimeConverter() final  DateTime date;
 @override@JsonKey()@TransactionTypeConverter() final  TransactionType type;
 @override final  String? note;

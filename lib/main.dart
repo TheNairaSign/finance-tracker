@@ -1,5 +1,4 @@
 import 'package:finance_tracker/core/routes/router.dart';
-import 'package:finance_tracker/core/theme/dark_theme.dart';
 import 'package:finance_tracker/core/theme/light_theme.dart';
 import 'package:finance_tracker/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';

@@ -1,5 +1,12 @@
 import 'dart:async';
 
+import 'package:finance_tracker/core/utils/build_page.dart';
+import 'package:finance_tracker/features/transaction/presentation/transactions_page.dart';
+import 'package:finance_tracker/pages/profile/sub_pages/help_support_page.dart';
+import 'package:finance_tracker/pages/profile/sub_pages/legal_page.dart';
+import 'package:finance_tracker/pages/profile/sub_pages/notification_page.dart';
+import 'package:finance_tracker/pages/profile/sub_pages/personal_info_page.dart';
+import 'package:finance_tracker/pages/profile/sub_pages/security_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +18,7 @@ import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/sign_up_page.dart';
 import '../../features/transaction/presentation/dashboard.dart';
 import '../../features/transaction/presentation/navigation_main_shell.dart';
-import '../../features/transaction/presentation/profile_page.dart';
+import '../../pages/profile/profile_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   print('Entering Router...');
@@ -39,10 +46,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/loading',
         builder: (context, state) => const LoadingPage(),
       ),
-      // GoRoute(
-      //   path: '/loading',
-      //   builder: (context, state) => const ChartPage(),
-      // ),
     ],
   );
 });
@@ -83,14 +86,41 @@ FutureOr<String?> Function(BuildContext, GoRouterState)? redirectLogic(Ref ref) 
 
 ShellRoute _navigationShell = ShellRoute(
   builder: (context, state, child) => NavigationMainShell(child: child),
+  pageBuilder: (context, state, child) => buildPage(NavigationMainShell(child: child), state),
   routes: [
     GoRoute(
       path: '/',
       builder: (context, state) => const Dashboard(),
     ),
     GoRoute(
+      path: '/transactions',
+      builder: (context, state) => const TransactionsPage(),
+    ),
+    GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfilePage(),
+      routes: [
+        authRoute(
+          path: '/profile/settings',
+          builder: (context, state) => const PersonalInfoPage(),
+        ),
+        authRoute(
+          path: '/profile/security',
+          builder: (context, state) => const SecurityPage(),
+        ),
+        authRoute(
+          path: '/profile/notifications',
+          builder: (context, state) =>  CircularProgressExample(),
+        ),
+        authRoute(
+          path: '/profile/support',
+          builder: (context, state) => const HelpSupportPage(),
+        ),
+        authRoute(
+          path: '/profile/legal',
+          builder: (context, state) => const LegalPage(),
+        ),
+      ]
     ),
   ],
 );
