@@ -1,11 +1,11 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:card_loading/card_loading.dart';
+import 'package:finance_tracker/core/widgets/currency_text_field.dart';
 import 'package:finance_tracker/features/auth/data/repositories/user_repository.dart';
 import 'package:finance_tracker/features/transaction/data/models/transaction.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_state.dart';
-import 'package:finance_tracker/features/transaction/presentation/widgets/transaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -147,18 +147,46 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                Text('Overall Transactions', style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 8),
+                // Text('Overall Transactions', style: Theme.of(context).textTheme.titleMedium),
+                // const SizedBox(height: 8),
                 transactionState.maybeWhen(
                   loaded: (transactions) {
                     final double incomeSum = transactions.where((txn) => txn.type == TransactionType.income).fold(0, (sum, transaction) => sum + transaction.amount);
                     final double expenseSum = transactions.where((txn) => txn.type == TransactionType.expense).fold(0, (sum, transaction) => sum + transaction.amount);
-                    return Row(
-                      spacing: 15,
-                      children: [
-                        Expanded(child: TransactionCard(amount: incomeSum.toString(), type: TransactionType.income)),
-                        Expanded(child: TransactionCard(amount: expenseSum.toString(), type: TransactionType.expense)),
-                      ],
+                    return Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        // color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(colors: [
+                          Colors.white,
+                          Theme.of(context).scaffoldBackgroundColor,
+                          Colors.grey.withValues(alpha: .2),
+                          // Colors.grey,
+                        ])
+                      ),
+                      child: Row(
+                        spacing: 15,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Overall income', style: Theme.of(context).textTheme.bodyMedium?.copyWith(),),
+                              const SizedBox(height: 10),
+                              Text('+$incomeSum', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.bold),)
+                            ],
+                          ),
+                          const Spacer(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('Overall expenses', style: Theme.of(context).textTheme.bodyMedium),
+                              const SizedBox(height: 10),
+                              Text('-$expenseSum', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red, fontWeight: FontWeight.bold))
+                            ],
+                          )
+                        ],
+                      ),
                     );
                   },
                   orElse: () => Row(
@@ -179,29 +207,47 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text('Profile Settings', style: Theme.of(context).textTheme.titleMedium),
+                Text('Profile Settings', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Container(
+                  padding: EdgeInsets.all(15),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
-                    children: List.generate(profileListItems.length, (index) {
-                      final item = profileListItems[index];
-                      return ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        title: Text(item.label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 15)),
-                        leading: item.color == null? null : CircleAvatar(
-                          backgroundColor: item.color?.withValues(alpha: 0.3),
-                          child: SvgPicture.asset(item.asset, height: 24, width: 24, color: item.color),
-                        ),
-                        trailing: item.isLogout? null : Icon(Icons.arrow_forward_ios_rounded, color: Colors.black, size: 15),
-                        onTap: item.isLogout ? () => _showSignOutDialog(context) : item.onTap,
-                      );
-                    }),
-                  )
-                ),
+                    spacing: 10,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * .67,
+                            child: CurrencyTextField()
+                          ),
+                          const Spacer(),
+                          SizedBox(
+                            height: 30,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(10))
+                              ),
+                              onPressed: () {}, 
+                              child: Text('Save', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),)
+                            ),
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text('Notification', style: Theme.of(context).textTheme.bodyLarge),
+                          const Spacer(),
+                          Switch.adaptive(value: false, onChanged: (didChange) {})
+                        ],
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
@@ -210,6 +256,30 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     );
   }
 }
+
+/*
+final container = Container(
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(20),
+  ),
+  child: Column(
+    children: List.generate(profileListItems.length, (index) {
+      final item = profileListItems[index];
+      return ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        title: Text(item.label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 15)),
+        leading: item.color == null? null : CircleAvatar(
+          backgroundColor: item.color?.withValues(alpha: 0.3),
+          child: SvgPicture.asset(item.asset, height: 24, width: 24, color: item.color),
+        ),
+        trailing: item.isLogout? null : Icon(Icons.arrow_forward_ios_rounded, color: Colors.black, size: 15),
+        onTap: item.isLogout ? () => _showSignOutDialog(context) : item.onTap,
+      );
+    }),
+  )
+);
+*/
 
 Future<bool?> _showSignOutDialog(BuildContext context) {
   return showDialog<bool>(

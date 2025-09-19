@@ -37,7 +37,7 @@ class TransactionItem extends StatelessWidget {
         title: Text(title.capitalize(), style: Theme.of(context).textTheme.bodyLarge),
         subtitle: Text(isExpense ? 'Expense' : 'Income', style: Theme.of(context).textTheme.bodySmall),
         trailing: Text(
-          amount,
+          isExpense ? '-$amount' : '+$amount',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: isExpense ? Colors.red : Colors.green,
             fontWeight: FontWeight.bold,

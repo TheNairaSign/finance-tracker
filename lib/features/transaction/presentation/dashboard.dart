@@ -3,9 +3,6 @@ import 'package:finance_tracker/features/auth/data/repositories/user_repository.
 import 'package:finance_tracker/features/transaction/logic/monthly/monthly_transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_state.dart';
-import 'package:finance_tracker/features/transaction/presentation/tabs/all_transactions_tab.dart';
-import 'package:finance_tracker/features/transaction/presentation/tabs/expenses_tab.dart';
-import 'package:finance_tracker/features/transaction/presentation/tabs/income_tab.dart';
 import 'package:finance_tracker/features/transaction/presentation/utils/add_transaction_modal.dart';
 import 'package:finance_tracker/features/transaction/presentation/widgets/add_transaction_button.dart';
 import 'package:finance_tracker/features/transaction/presentation/widgets/progress_card.dart';
@@ -233,44 +230,6 @@ class _DashboardState extends ConsumerState<Dashboard> with SingleTickerProvider
         // TxnTab(tabController: _tabController),
         // const SizedBox(height: 15),
         // RecentTxns(),
-      ],
-    );
-  }
-}
-
-class TxnTab extends StatelessWidget {
-  final TabController? tabController;
-
-  const TxnTab({super.key, required this.tabController});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TabBar(
-          controller: tabController,
-          indicatorColor: Color(0xFFb1ff85),
-          labelColor: Colors.black,
-          indicatorSize: TabBarIndicatorSize.tab,
-          dividerColor: Colors.transparent,
-          unselectedLabelColor: Colors.grey,
-          labelStyle: Theme.of(context).textTheme.bodyMedium,
-          tabs: [
-            Tab(text: 'All'),
-            Tab(text: 'Income'),
-            Tab(text: 'Expenses'),
-          ],
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: tabController,
-            children: [
-              AllTransactionsTab(),
-              IncomeTab(),
-              ExpenseTab(),
-            ],
-          ),
-        ),
       ],
     );
   }

@@ -1,6 +1,5 @@
-// ignore_for_file: sized_box_for_whitespace
+// ignore_for_file: sized_box_for_whitespace, deprecated_member_use
 
-import 'package:finance_tracker/features/auth/data/repositories/user_repository.dart';
 import 'package:finance_tracker/features/transaction/logic/monthly/monthly_transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/all_transactions_tab.dart';
@@ -93,13 +92,13 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> with Single
                 padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 decoration: BoxDecoration(
                   color: isSelected ? Colors.black : Colors.white.withValues(alpha: .3),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: Center(
                   child: Text(
                     months[index],
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isSelected ? Colors.white : Colors.black,
+                      color: Colors.white,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
@@ -116,16 +115,14 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> with Single
   Widget build(BuildContext context) {
 
     String formattedMonth = DateFormat('MMMM').format(currentMonth);
-    String formattedYear = DateFormat('yyyy').format(currentMonth);
+    // String formattedYear = DateFormat('yyyy').format(currentMonth);
     
-    final profileData = ref.watch(getUserDataProvider);
-    final user = profileData.value;
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 130,
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
-        backgroundColor: Color(0xfffee4ac),
-        // title: Text('Transactions'),
+        // backgroundColor: Color(0xfffee4ac),
+        backgroundColor: Color(0xFF171f32),
         centerTitle: true,
         flexibleSpace: Container(
           padding: EdgeInsets.symmetric(vertical: 60, horizontal: 15),
@@ -133,44 +130,33 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> with Single
             children: [
               Row(
                 children: [
-                  Text('Transactions', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),),
+                  Text('Transactions', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),),
                   const Spacer(),
                   Container(
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey.withValues(alpha: .2)
+                      color: Colors.white.withValues(alpha: .2)
                     ),
                     child: Badge.count(
                       count: 2,
-                      child: SvgPicture.asset('assets/svgs/profile/notification.svg', color: Colors.black),
+                      child: SvgPicture.asset(
+                        'assets/svgs/profile/notification.svg', color: Colors.white,
+                      ),
                     ),
                   )
                 ],
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
               monthsContainer()
             ],
           ),
         ),
-        actions: [
-          // Container(
-          //   padding: EdgeInsets.all(5),
-          //   decoration: BoxDecoration(
-          //     shape: BoxShape.circle,
-          //     color: Colors.grey.withValues(alpha: .2)
-          //   ),
-          //   child: Badge.count(
-          //     count: 2,
-          //     child: SvgPicture.asset('assets/svgs/profile/notification.svg', color: Colors.white),
-          //   ),
-          // )
-        ],
         bottom: TabBar(
           controller: _tabController,
           // indicatorColor: Color(0xFFb1ff85),
-          indicatorColor: Colors.black,
-          labelColor: Colors.black,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
           indicatorSize: TabBarIndicatorSize.tab,
           dividerColor: Colors.transparent,
           unselectedLabelColor: Colors.grey,
@@ -188,9 +174,9 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> with Single
         child: TabBarView(
           controller: _tabController,
           children: [
-            AllTransactionsTab(),
-            IncomeTab(),
-            ExpenseTab(),
+            AllTransactionsTab(month: formattedMonth),
+            IncomeTab(month: formattedMonth),
+            ExpenseTab(month: formattedMonth),
           ],
         ),
       ),

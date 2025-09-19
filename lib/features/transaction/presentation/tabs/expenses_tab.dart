@@ -8,7 +8,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../../data/models/transaction.dart';
 
 class ExpenseTab extends ConsumerStatefulWidget {
-  const ExpenseTab({super.key});
+  const ExpenseTab({super.key, required this.month});
+  final String month;
 
   @override
   ConsumerState<ExpenseTab> createState() => _ExpenseTabState();
@@ -18,12 +19,17 @@ class _ExpenseTabState extends ConsumerState<ExpenseTab> {
   @override
   Widget build(BuildContext context) {
     final transactionState = ref.watch(monthlyTransactionNotifierProvider);
-    final textStyle = Theme.of(context).textTheme.headlineSmall;
+    final textStyle = Theme.of(context).textTheme.bodyLarge;
+    final currentMonth = widget.month;
+
+
+    final emptyText = Text('No expense transactions for $currentMonth', style: textStyle, textAlign: TextAlign.center,);
+
 
     return switch (transactionState) {
       MonthlyTransactionInitial() => Center(child: LoadingAnimationWidget.discreteCircle(color: Colors.red, size: 50)),
       MonthlyTransactionLoading() => Center(child: LoadingAnimationWidget.discreteCircle(color: Colors.red, size: 50)),
-      MonthlyTransactionLoaded() when (transactionState.transactions.where((t) => t.type == TransactionType.expense).toList().isEmpty) => Center(child: Text('No expense transactions', style: textStyle)),
+      MonthlyTransactionLoaded() when (transactionState.transactions.where((t) => t.type == TransactionType.expense).toList().isEmpty) => Center(child: emptyText),
       MonthlyTransactionLoaded() => Builder(
         builder: (context) {
           final expenseTransactions = transactionState.transactions.where((type) => type.type == TransactionType.expense).toList();

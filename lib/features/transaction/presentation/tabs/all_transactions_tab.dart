@@ -8,7 +8,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 
 class AllTransactionsTab extends ConsumerStatefulWidget {
-  const AllTransactionsTab({super.key});
+  const AllTransactionsTab({super.key, required this.month});
+  final String month;
+
 
   @override
   ConsumerState<AllTransactionsTab> createState() => _AllTransactionsTabState();
@@ -19,12 +21,15 @@ class _AllTransactionsTabState extends ConsumerState<AllTransactionsTab> {
   Widget build(BuildContext context) {
     final transactionState = ref.watch(monthlyTransactionNotifierProvider);
 
-    final textStyle = Theme.of(context).textTheme.headlineSmall;
+    final textStyle = Theme.of(context).textTheme.bodyLarge;
+    final currentMonth = widget.month;
+
+    final emptyText = Text('No transactions for $currentMonth', style: textStyle, textAlign: TextAlign.center,);
 
     return switch (transactionState) {
       MonthlyTransactionInitial() => const Center(child: CircularProgressIndicator()),
       MonthlyTransactionLoading() => Center(child: LoadingAnimationWidget.discreteCircle(color: Colors.green, size: 50)),
-      MonthlyTransactionLoaded() when (transactionState.transactions.isEmpty) => Center(child: Text('No transactions found', style: textStyle)),
+      MonthlyTransactionLoaded() when (transactionState.transactions.isEmpty) => Center(child: emptyText),
       MonthlyTransactionLoaded() =>  ListView.separated(
         separatorBuilder: (context, index) => const SizedBox(height: 10),
         itemCount: transactionState.transactions.length,
@@ -37,8 +42,8 @@ class _AllTransactionsTabState extends ConsumerState<AllTransactionsTab> {
           );
         },
       ),
-      MonthlyTransactionError() => Center(child: Text('Error loading transactions', style: textStyle)),
-      _ => Center(child: Text('No transactions found', style: textStyle))
+      MonthlyTransactionError() => Center(child: Text('Error loading transactions for $currentMonth', style: textStyle)),
+      _ => Center(child: emptyText)
     };
 
   }

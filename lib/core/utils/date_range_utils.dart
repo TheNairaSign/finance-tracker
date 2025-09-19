@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class DateRangeUtils {
   /// Returns the start and end of the given month.
   /// If no date is provided, defaults to [DateTime.now()].
@@ -28,12 +26,6 @@ class DateRangeUtils {
       "start": startOfDay,
       "end": endOfDay,
     };
-  }
-
-  static monthsOfTheyear() {
-    final now = DateTime.now();
-    final months = DateTime(now.year);
-    final month = months.month;
   }
 
   /// Returns a list of month names in order from January to December
