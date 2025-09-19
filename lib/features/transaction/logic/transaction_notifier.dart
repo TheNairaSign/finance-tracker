@@ -17,13 +17,11 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
   TransactionNotifier(this.transactionRepository) : super(TransactionState.initial());
 
   void getTransactions() async {
-    print('Getting user transactions');
     // state = TransactionState.loading();
 
     _subscription?.cancel();
 
     _subscription = transactionRepository.getTransactions().listen((transactions) {
-        print('Transactions from subscription: $transactions');
         _txns = transactions;
         state = TransactionState.loaded(transactions);
       },
@@ -43,14 +41,49 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     }
   }
 
+  List<Transaction> getCurrentMonthTransactions() {
+    final now = DateTime.now();
+    final currentMonth = DateTime(now.year, now.month);
+    
+    try {
+      final currentMonthTransactions = _txns.where((transaction) {
+        final txnDate = DateTime(
+          transaction.date.year,
+          transaction.date.month,
+        );
+        return txnDate.isAtSameMomentAs(currentMonth);
+      }).toList();
+      return currentMonthTransactions;
+    } catch (e) {
+      state = TransactionState.error(e.toString());
+      return [];
+    }
+  }
+
+  List<Transaction> getTransactionsForMonth(DateTime month) {
+    final targetMonth = DateTime(month.year, month.month);
+    
+    try {
+      final monthlyTransactions = _txns.where((transaction) {
+        final txnDate = DateTime(
+          transaction.date.year,
+          transaction.date.month,
+        );
+        return txnDate.isAtSameMomentAs(targetMonth);
+      }).toList();
+      return monthlyTransactions;
+    } catch (e) {
+      state = TransactionState.error(e.toString());
+      return [];
+    }
+  }
+
   Future<void> addTransaction(Transaction txn) async {
-    print('Adding transaction: $txn');
     state = TransactionState.loading();
     try {
       await transactionRepository.addTransaction(txn).then((_) => getTransactions());
       state = TransactionState.loaded([txn]);
     } catch (e) {
-      print('Error adding transaction: $e');
       state = TransactionState.error(e.toString());
     }
   }

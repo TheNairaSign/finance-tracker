@@ -1,5 +1,6 @@
 import 'package:card_loading/card_loading.dart';
 import 'package:finance_tracker/features/auth/data/repositories/user_repository.dart';
+import 'package:finance_tracker/features/transaction/logic/monthly/monthly_transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_state.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/all_transactions_tab.dart';
@@ -30,6 +31,7 @@ class _DashboardState extends ConsumerState<Dashboard> with SingleTickerProvider
   void initState() {
     super.initState();
     ref.read(transactionNotifierProvider.notifier).getTransactions();
+    ref.read(monthlyTransactionNotifierProvider.notifier).getTransactionsForCurrentMonth();
   }
 
   @override

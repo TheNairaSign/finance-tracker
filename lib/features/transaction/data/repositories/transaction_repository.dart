@@ -72,6 +72,24 @@ class TransactionRepository {
     }
   }
 
+  /// Get transactions for a specific month and year
+  Stream<List<Transaction>> getTransactionsForMonth(DateTime date) {
+    try {
+      final range = DateRangeUtils.getMonthRange(date);
+
+      return _userTransactionCollection
+          .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(range["start"]!))
+          .where('date', isLessThanOrEqualTo: Timestamp.fromDate(range["end"]!))
+          .orderBy('date', descending: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => Transaction.fromJson(doc.data()).copyWith(id: doc.id))
+              .toList());
+    } on FirebaseException catch (e) {
+      throw AuthException(e.message ?? 'Something went wrong while fetching transactions');
+    }
+  }
+
   /// 🔹 Get total budget (income) for current month
   Future<double> getCurrentMonthBudget() async {
     try {

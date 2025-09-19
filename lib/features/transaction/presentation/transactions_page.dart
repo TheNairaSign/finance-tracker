@@ -1,6 +1,7 @@
 // ignore_for_file: sized_box_for_whitespace
 
 import 'package:finance_tracker/features/auth/data/repositories/user_repository.dart';
+import 'package:finance_tracker/features/transaction/logic/monthly/monthly_transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/logic/transaction_notifier.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/all_transactions_tab.dart';
 import 'package:finance_tracker/features/transaction/presentation/tabs/expenses_tab.dart';
@@ -85,6 +86,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> with Single
               onTap: () {
                 setState(() {
                   currentMonth = DateTime(currentMonth.year, index + 1);
+                  ref.watch(monthlyTransactionNotifierProvider.notifier).getTransactionsForSelectedMonth(currentMonth);
                 });
               },
               child: Container(
