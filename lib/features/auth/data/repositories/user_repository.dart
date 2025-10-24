@@ -10,11 +10,16 @@ class UserRepository {
 
   UserRepository({FirebaseFirestore? firestore, Ref? ref}) : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  final _userId = FirebaseAuth.instance.currentUser?.uid;
-
-  DocumentReference<Map<String, dynamic>> get _userCollection => _firestore.collection('users').doc(_userId);
+  DocumentReference<Map<String, dynamic>> get _userCollection {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    return _firestore.collection('users').doc(userId);
+  }
 
   Future<void> saveUser(UserModel user) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      return;
+    }
     final userExists = await _userCollection.get().then((snapshot) => snapshot.exists);
     if (userExists) {
       print('User already exists! No overriding!!!');
@@ -24,10 +29,14 @@ class UserRepository {
     await _userCollection.set(user.toJson(), SetOptions(merge: true));
   }
 
-  Future<UserModel> getUser() async {
+  Future<UserModel?> getUser() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      return null;
+    }
     DocumentSnapshot snapshot = await _userCollection.get();
     if (!snapshot.exists) {
-      throw Exception('User not found');
+      return null;
     }
 
     print('User Model: ${snapshot.data()}');
@@ -35,10 +44,18 @@ class UserRepository {
   }
 
   void updateBudget(double budget) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      return;
+    }
     _userCollection.update({'budget': budget}).then((_) async => await getUser());
   }
 
   Future<void> updateLastLogin(String uid, DateTime lastLogin) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      return;
+    }
     await _userCollection.update({'lastLogin': DateTime.now().toIso8601String()});
   }
 

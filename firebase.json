@@ -1,1 +1,22 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"halo-task-a9236","appId":"1:440038229820:android:0eed379bfe23e6681fc039","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"halo-task-a9236","configurations":{"android":"1:440038229820:android:0eed379bfe23e6681fc039","ios":"1:440038229820:ios:0f3ad44b966510361fc039"}}}}}}
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "halo-task-a9236",
+                    "appId": "1:440038229820:android:0eed379bfe23e6681fc039",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "halo-task-a9236",
+                    "configurations": {
+                        "android": "1:440038229820:android:0eed379bfe23e6681fc039",
+                        "ios": "1:440038229820:ios:0f3ad44b966510361fc039"
+                    }
+                }
+            }
+        }
+    }
+}

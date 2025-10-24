@@ -28,6 +28,37 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final state = ref.watch(loginNotifierProvider);
     final provider = ref.watch(loginNotifierProvider.notifier);
+
+    ref.listen<LoginState>(loginNotifierProvider, (previous, next) {
+      next.maybeWhen(
+        authenticated: (_) {
+          if (widget.from != null) {
+            context.go(widget.from!);
+          } else {
+            context.go('/');
+          }
+        },
+        error: (message) {
+          debugPrint('Error logging in: $message');
+          if (!mounted) return;
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Login Failed'),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                )
+              ],
+            ),
+          );
+        },
+        orElse: () {},
+      );
+    });
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -59,7 +90,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               CheckboxListTile(
                 checkboxShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                 title: Text('Remember me', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
                 activeColor: GlobalColors.primaryColor,
                 checkColor: Colors.white,
@@ -76,42 +107,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: AuthButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      provider.signIn(_emailController.text, _passwordController.text).then((_) {
-                        ref.watch(loginNotifierProvider).maybeWhen(
-                          authenticated: (_) {
-                            if (widget.from != null) {
-                              context.go(widget.from!);
-                            } else {
-                              context.go('/');
-                            }
-                          },
-                          error: (message) {
-                            debugPrint('Error logging in: $message');
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text('Login Failed'),
-                                content: Text(message),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
-                                    child: Text('OK'),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          orElse: () => debugPrint('Or ELSE')
-                        );
-                      });
+                      provider.signIn(_emailController.text, _passwordController.text);
                     }
-                    // if (isAuthed!) {
-                    //   if (widget.from != null) {
-                    //     context.go(widget.from!);
-                    //   } else {
-                    //     context.go('/');
-                    //   }
-                    // }
                   },
                   text: 'Login',
                   child: state == LoginState.loading() ? Row(
@@ -119,10 +116,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     children: [
                       Text('Logging in', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
                       const SizedBox(width: 10),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                         width: 15,
-                        child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       ),
                     ],
                   ) : null,

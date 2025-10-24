@@ -33,6 +33,33 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   Widget build(BuildContext context) {
     final state = ref.watch(signUpNotifierProvider);
     final provider = ref.watch(signUpNotifierProvider.notifier);
+
+    ref.listen<SignUpState>(signUpNotifierProvider, (previous, next) {
+      next.maybeWhen(
+        authenticated: (_) {
+          context.go('/');
+        },
+        error: (message) {
+          debugPrint('Error signing up: $message');
+          if (!mounted) return;
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Sign Up Failed'),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                )
+              ],
+            ),
+          );
+        },
+        orElse: () {},
+      );
+    });
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
@@ -50,7 +77,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                 children: List.generate(fieldModels.length, (index) {
                   final field = fieldModels[index];
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.only(bottom: 20),
                     child: CustomTextField(
                       controller: field.controller,
                       keyboardType: field.keyboardType,
@@ -64,7 +91,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               ),
               CheckboxListTile(
                 checkboxShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                 title: Text('I agree with terms of use', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
                 activeColor: GlobalColors.primaryColor,
                 value: _isChecked,
@@ -85,30 +112,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         fieldModels[1].controller.text,
                         fieldModels[2].controller.text,
                         displayName: fieldModels[0].controller.text,
-                      ).then((_) {
-                        ref.watch(signUpNotifierProvider).maybeWhen(
-                          authenticated: (_) {
-                            context.go('/');
-                          },
-                          error: (message) {
-                            debugPrint('Error signing up: $message');
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text('Sign Up Failed'),
-                                content: Text(message),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
-                                    child: Text('OK'),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          orElse: () => debugPrint('Or ELSE')
-                        );
-                      });
+                      );
                     }
                   },
                   text: 'Sign up',
@@ -117,10 +121,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     children: [
                       Text('Registering', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
                       const SizedBox(width: 10),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                         width: 20,
-                        child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       ),
                     ],
                   ) : null,

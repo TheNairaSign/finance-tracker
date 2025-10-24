@@ -20,29 +20,11 @@ class AuthRepository {
     final userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
 
     if (userCredential.user != null) {
-      final user = userCredential.user;
-
-      if (user == null) {
-        print('User is null on signIn');
-        return null;
-      }
-      final userModel = UserModel(
-        uid: user.uid,
-        email: user.email ?? '',
-        displayName: user.displayName ?? '',
-        photoURL: user.photoURL,
-        balance: 0,
-        budget: 0.0,
-        createdAt: user.metadata.creationTime ?? DateTime.now(),
-        lastSignIn: user.metadata.lastSignInTime ?? DateTime.now(),
-      );
-      await _userRepository.saveUser(userModel);
-
       await _userRepository.updateLastLogin(
-        user.uid,
-        user.metadata.lastSignInTime ?? DateTime.now(),
-    );
-    }
+        userCredential.user!.uid,
+        userCredential.user!.metadata.lastSignInTime ?? DateTime.now(),
+      );
+    } 
 
     return userCredential.user;
   }
@@ -50,11 +32,26 @@ class AuthRepository {
   Future<User?> createUserWithEmailAndPassword(String email, String password, {required String displayName}) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
     await updateDisplayName(displayName);
+    final user = userCredential.user;
+
+    if (user != null) {
+      final userModel = UserModel(
+        uid: user.uid,
+        email: user.email ?? '',
+        displayName: displayName,
+        photoURL: user.photoURL,
+        balance: 0,
+        budget: 0.0,
+        createdAt: user.metadata.creationTime ?? DateTime.now(),
+        lastSignIn: user.metadata.lastSignInTime ?? DateTime.now(),
+      );
+      await _userRepository.saveUser(userModel);
+    }
     return userCredential.user;
   }
 
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    await _firebaseAuth.signOut(); 
   }
 
   Future<void> sendPasswordResetEmail(String email) async {

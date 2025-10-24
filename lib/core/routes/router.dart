@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:finance_tracker/core/utils/build_page.dart';
+import 'package:finance_tracker/features/auth/logic/login_state.dart';
+import 'package:finance_tracker/features/auth/logic/sign_up_state.dart';
 import 'package:finance_tracker/features/transaction/presentation/transactions_page.dart';
 import 'package:finance_tracker/pages/profile/sub_pages/help_support_page.dart';
 import 'package:finance_tracker/pages/profile/sub_pages/legal_page.dart';
@@ -21,14 +23,38 @@ import '../../features/transaction/presentation/navigation_main_shell.dart';
 import '../../pages/profile/profile_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  print('Entering Router...');
-  final authRepository = AuthRepository();
-  print('Entering Router again...');
+  final authState = ref.watch(authStateProvider);
 
   return GoRouter(
     initialLocation: '/loading',
-    redirect: redirectLogic(ref),
-    refreshListenable: GoRouterRefreshStream(authRepository.authStateChanges),
+    redirect: (context, state) {
+      final user = authState.asData?.value;
+      final isLoading = authState.isLoading;
+
+      final isLoggingIn = state.matchedLocation == '/login';
+      final isSigningUp = state.matchedLocation == '/sign-up';
+      final isGoingToPublic = isLoggingIn || isSigningUp;
+
+      // 1. If we are still loading, redirect to the loading screen.
+      if (isLoading) {
+        return state.matchedLocation == '/loading' ? null : '/loading';
+      }
+
+      // 2. If the user is NOT authenticated.
+      if (user == null) {
+        // Allow navigation to login and sign-up pages.
+        return isGoingToPublic ? null : '/login';
+      }
+      // 3. If the user IS authenticated.
+      else {
+        // Prevent navigation to public pages and redirect to the home page.
+        if (isGoingToPublic || state.matchedLocation == '/loading') {
+          return '/';
+        }
+        // Allow navigation to any other page.
+        return null;
+      }
+    },
     routes: <RouteBase>[
       _navigationShell,
       GoRoute(
@@ -49,40 +75,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-FutureOr<String?> Function(BuildContext, GoRouterState)? redirectLogic(Ref ref) {
-  return (context, state) async {
-    final authState = await Future.microtask(() => ref.watch(authStateProvider));
-    final user = authState.asData?.value;
-    final isLoading = authState.isLoading;
-
-    final isLoggingIn = state.matchedLocation == '/login';
-    final isSigningUp = state.matchedLocation == '/sign-up';
-    final isGoingToPublic = isLoggingIn || isSigningUp;
-
-    // 1. If we are still loading, redirect to the loading screen.
-    if (isLoading) {
-      return state.matchedLocation == '/loading' ? null : '/loading';
-    }
-
-    // 2. If the user is NOT authenticated.
-    if (user == null) {
-      print('User is null: $user');
-      // Allow navigation to login and sign-up pages.
-      return isGoingToPublic ? null : '/login';
-    }
-    // 3. If the user IS authenticated.
-    else {
-      // Prevent navigation to public pages and redirect to the home page.
-      if (isGoingToPublic || state.matchedLocation == '/loading') {
-        print('User: $user');
-        return '/';
-      }
-      // Allow navigation to any other page.
-      return null;
-    }
-  };
-}
 
 ShellRoute _navigationShell = ShellRoute(
   builder: (context, state, child) => NavigationMainShell(child: child),

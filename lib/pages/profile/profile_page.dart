@@ -62,12 +62,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: NetworkImage(profileData.value?.photoURL ?? 'https://via.placeholder.com/150'),
+                    backgroundImage: NetworkImage( profileData.value != null ? profileData.value?.photoURL ?? 'https://via.placeholder.com/150' : 'https://via.placeholder.com/150' ),
                     onBackgroundImageError: (exception, stackTrace) => _getInitials(profileData.value?.displayName),
                   ),
                   SizedBox(height: 10),
                   Text('${profileData.value?.displayName}', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
-                Text('${profileData.value?.email}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey)),
+                  Text('${profileData.value?.email}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey)),
                 ],
               ),
             ),
